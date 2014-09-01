@@ -5,6 +5,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityModels", "EntityModel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleService", "SampleService\SampleService.csproj", "{006BD0E5-543A-431A-A15A-44B1DB383F02}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleTest", "SampleTest\SampleTest.csproj", "{6150DE59-AA23-4D8C-B946-EBB464938A94}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6ECD5269-AB8C-4084-9FB3-7DB274F253C3}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +26,10 @@ Global
 		{006BD0E5-543A-431A-A15A-44B1DB383F02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{006BD0E5-543A-431A-A15A-44B1DB383F02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{006BD0E5-543A-431A-A15A-44B1DB383F02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6150DE59-AA23-4D8C-B946-EBB464938A94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6150DE59-AA23-4D8C-B946-EBB464938A94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6150DE59-AA23-4D8C-B946-EBB464938A94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6150DE59-AA23-4D8C-B946-EBB464938A94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

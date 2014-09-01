@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 using EntityModels;
 using EntityModels.Models;
 using System;
@@ -16,32 +19,53 @@ namespace SampleService
             this._repository = new CarRepository(this._context);
         }
 
-        public void GetAllCars()
+        public IList<Car> GetAllCars()
+        {
+            var results = this._repository
+                              .Get();
+            return results.ToList();
+        }
+
+        public IList<CarViewModel> GetMaxMinMinPricesByManufacturer1()
+        {
+            var results = (from c in this._context.Cars
+                           group c by c.Manufacturer into g
+                           select new CarViewModel()
+                                  {
+                                      Manufacturer = g.Key,
+                                      MaxPrice = g.Max(q => q.Price),
+                                      MinPrice = g.Min(q => q.Price)
+                                  });
+            return results.ToList();
+        }
+
+        public IList<CarViewModel> GetMaxMinMinPricesByManufacturer2()
         {
             var results = this._repository
                               .Get()
-                              .ToList();
+                              .GroupBy(p => p.Manufacturer, q => new {Manufacturer = q.Manufacturer, Price = q.Price})
+                              .Select(p => new CarViewModel()
+                                           {
+                                               Manufacturer = p.Key,
+                                               MaxPrice = p.Max(q => q.Price),
+                                               MinPrice = p.Min(q => q.Price)
+                                           });
+            return results.ToList();
         }
 
-        public void GetMaxMinPricesByManufacturer()
+        public IList<CarViewModel> GetCars3()
         {
-            var results = this._repository
-                              .Get()
-                              .GroupBy(p => p.Manufacturer, q => new { Manufacturer = q.Manufacturer, Price = q.Price })
-                              .Select(p => new { Manufacturer = p.Key, MaxPrice = p.Max(q => q.Price) })
-                              .ToList();
+            throw new NotImplementedException();
         }
 
-        public void GetCars3()
+        public IList<CarViewModel> GetCars4()
         {
+            throw new NotImplementedException();
         }
 
-        public void GetCars4()
+        public IList<CarViewModel> GetCars5()
         {
-        }
-
-        public void GetCars5()
-        {
+            throw new NotImplementedException();
         }
 
         public void Dispose()
