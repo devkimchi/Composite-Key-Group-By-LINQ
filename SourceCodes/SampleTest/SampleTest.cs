@@ -44,6 +44,20 @@ namespace SampleTest
             var results2 = this._service.GetMaxMinMinPricesByManufacturer2();
         }
 
+        [Test]
+        public void GetMaxMinPricesByManufacturerName()
+        {
+            var results1 = this._service.GetMaxMinMinPricesByManufacturerName1();
+            var results2 = this._service.GetMaxMinMinPricesByManufacturerName2();
+        }
+
+        [Test]
+        public void GetMaxMinPricesByManufacturerNameWithYear()
+        {
+            var results1 = this._service.GetMaxMinMinPricesByManufacturerNameWithYear1();
+            var results2 = this._service.GetMaxMinMinPricesByManufacturerNameWithYear2();
+        }
+
         #endregion
     }
 }

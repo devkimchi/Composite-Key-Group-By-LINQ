@@ -53,17 +53,72 @@ namespace SampleService
             return results.ToList();
         }
 
-        public IList<CarViewModel> GetCars3()
+        public IList<CarViewModel> GetMaxMinMinPricesByManufacturerName1()
+        {
+            var results1 = (from c in this._context.Cars
+                            group c by new { Manufacturer = c.Manufacturer, Name = c.Name } into g
+                            select new CarViewModel()
+                                   {
+                                       Manufacturer = g.Key.Manufacturer,
+                                       Name = g.Key.Name,
+                                       MaxPrice = g.Max(q => q.Price),
+                                       MinPrice = g.Min(q => q.Price)
+                                   });
+            return results1.ToList();
+        }
+
+        public IList<CarViewModel> GetMaxMinMinPricesByManufacturerName2()
+        {
+            var results2 = this._repository
+                               .Get()
+                               .GroupBy(c => new { Manufacturer = c.Manufacturer, Name = c.Name },
+                                        (g, r) => new CarViewModel()
+                                                  {
+                                                      Manufacturer = g.Manufacturer,
+                                                      Name = g.Name,
+                                                      MaxPrice = r.Max(q => q.Price),
+                                                      MinPrice = r.Min(q => q.Price)
+                                                  });
+            return results2.ToList();
+        }
+
+        public IList<CarViewModel> GetMaxMinMinPricesByManufacturerNameWithYear1()
+        {
+            var results1 = (from c in this._context.Cars
+                            where c.Year != null
+                            group c by new { Manufacturer = c.Manufacturer, Name = c.Name } into g
+                            select new CarViewModel()
+                                   {
+                                       Manufacturer = g.Key.Manufacturer,
+                                       Name = g.Key.Name,
+                                       MaxPrice = g.Max(q => q.Price),
+                                       MinPrice = g.Min(q => q.Price)
+                                   });
+            return results1.ToList();
+        }
+
+        public IList<CarViewModel> GetMaxMinMinPricesByManufacturerNameWithYear2()
+        {
+            var results2 = this._repository
+                               .Get()
+                               .Where(c => c.Year != null)
+                               .GroupBy(c => new { Manufacturer = c.Manufacturer, Name = c.Name },
+                                        (g, r) => new CarViewModel()
+                                                  {
+                                                      Manufacturer = g.Manufacturer,
+                                                      Name = g.Name,
+                                                      MaxPrice = r.Max(q => q.Price),
+                                                      MinPrice = r.Min(q => q.Price)
+                                                  });
+            return results2.ToList();
+        }
+
+        public IList<CarViewModel> GetMaxMinMinPricesByManufacturerNameWithYearMoreThanOne1()
         {
             throw new NotImplementedException();
         }
 
-        public IList<CarViewModel> GetCars4()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IList<CarViewModel> GetCars5()
+        public IList<CarViewModel> GetMaxMinMinPricesByManufacturerNameWithYearMoreThanOne2()
         {
             throw new NotImplementedException();
         }
