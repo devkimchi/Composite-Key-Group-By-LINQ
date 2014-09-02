@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using EntityModels;
+﻿using EntityModels;
 using EntityModels.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SampleService
 {
@@ -19,38 +17,43 @@ namespace SampleService
             this._repository = new CarRepository(this._context);
         }
 
-        public IList<Car> GetAllCars()
+        public IList<Car> GetAllCars1()
         {
-            var results = this._repository
-                              .Get();
-            return results.ToList();
+            var results1 = (from c in this._context.Cars select c);
+            return results1.ToList();
+        }
+
+        public IList<Car> GetAllCars2()
+        {
+            var results2 = this._repository.Get();
+            return results2.ToList();
         }
 
         public IList<CarViewModel> GetMaxMinMinPricesByManufacturer1()
         {
-            var results = (from c in this._context.Cars
-                           group c by c.Manufacturer into g
-                           select new CarViewModel()
-                                  {
-                                      Manufacturer = g.Key,
-                                      MaxPrice = g.Max(q => q.Price),
-                                      MinPrice = g.Min(q => q.Price)
-                                  });
-            return results.ToList();
+            var results1 = (from c in this._context.Cars
+                            group c by c.Manufacturer into g
+                            select new CarViewModel()
+                                   {
+                                       Manufacturer = g.Key,
+                                       MaxPrice = g.Max(q => q.Price),
+                                       MinPrice = g.Min(q => q.Price)
+                                   });
+            return results1.ToList();
         }
 
         public IList<CarViewModel> GetMaxMinMinPricesByManufacturer2()
         {
-            var results = this._repository
-                              .Get()
-                              .GroupBy(p => p.Manufacturer, q => new {Manufacturer = q.Manufacturer, Price = q.Price})
-                              .Select(p => new CarViewModel()
-                                           {
-                                               Manufacturer = p.Key,
-                                               MaxPrice = p.Max(q => q.Price),
-                                               MinPrice = p.Min(q => q.Price)
-                                           });
-            return results.ToList();
+            var results2 = this._repository
+                               .Get()
+                               .GroupBy(c => c.Manufacturer, r => new { Manufacturer = r.Manufacturer, Price = r.Price })
+                               .Select(c => new CarViewModel()
+                                            {
+                                                Manufacturer = c.Key,
+                                                MaxPrice = c.Max(q => q.Price),
+                                                MinPrice = c.Min(q => q.Price)
+                                            });
+            return results2.ToList();
         }
 
         public IList<CarViewModel> GetMaxMinMinPricesByManufacturerName1()

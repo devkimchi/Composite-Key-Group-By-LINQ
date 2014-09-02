@@ -313,4 +313,35 @@ var results2 = this._repository
 </pre>
 </div>
 
+As you can see above, either `where` keyword or `Where()` method has been added. Both also generate the same SQL queries like:
+
+<div>
+<pre lang="sql">
+SELECT 
+    1 AS [C1], 
+    [GroupBy1].[K2] AS [Manufacturer], 
+    [GroupBy1].[K1] AS [Name], 
+    [GroupBy1].[A1] AS [C2], 
+    [GroupBy1].[A2] AS [C3]
+    FROM ( SELECT 
+        [Extent1].[Name] AS [K1], 
+        [Extent1].[Manufacturer] AS [K2], 
+        MAX([Extent1].[Price]) AS [A1], 
+        MIN([Extent1].[Price]) AS [A2]
+        FROM [dbo].[Cars] AS [Extent1]
+        WHERE [Extent1].[Year] IS NOT NULL
+        GROUP BY [Extent1].[Name], [Extent1].[Manufacturer]
+    )  AS [GroupBy1]
+</pre>
+</div>
+
+It returns the result of:
+
+|C1|Manufacturer|Name|C2|C3|
+|---|---|---|---|---|
+|1|BMW|118|116|110|
+|1|Hyundai|i30|109|107|
+|1|Hyundai|Lantra|110|100|
+|1|Toyota|Yaris|108|105|
+|1|VW|Golf|120|110|
 

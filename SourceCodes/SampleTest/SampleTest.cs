@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using EntityModels;
-using EntityModels.Models;
 using NUnit.Framework;
 using SampleService;
 
@@ -13,6 +7,7 @@ namespace SampleTest
     public class SampleTest
     {
         #region SetUp / TearDown
+
         private CarService _service;
 
         [SetUp]
@@ -27,14 +22,15 @@ namespace SampleTest
             this._service.Dispose();
         }
 
-        #endregion
+        #endregion SetUp / TearDown
 
         #region Tests
 
         [Test]
         public void GetAllCars()
         {
-            var results = this._service.GetAllCars();
+            var results1 = this._service.GetAllCars1();
+            var results2 = this._service.GetAllCars2();
         }
 
         [Test]
@@ -58,6 +54,6 @@ namespace SampleTest
             var results2 = this._service.GetMaxMinMinPricesByManufacturerNameWithYear2();
         }
 
-        #endregion
+        #endregion Tests
     }
 }
