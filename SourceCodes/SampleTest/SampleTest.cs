@@ -1,3 +1,4 @@
+using FluentAssertions;
 using NUnit.Framework;
 using SampleService;
 
@@ -31,6 +32,8 @@ namespace SampleTest
         {
             var results1 = this._service.GetAllCars1();
             var results2 = this._service.GetAllCars2();
+
+            results1.Count.Should().Be(results2.Count);
         }
 
         [Test]
@@ -38,6 +41,8 @@ namespace SampleTest
         {
             var results1 = this._service.GetMaxMinMinPricesByManufacturer1();
             var results2 = this._service.GetMaxMinMinPricesByManufacturer2();
+
+            results1.Count.Should().Be(results2.Count);
         }
 
         [Test]
@@ -45,6 +50,8 @@ namespace SampleTest
         {
             var results1 = this._service.GetMaxMinMinPricesByManufacturerName1();
             var results2 = this._service.GetMaxMinMinPricesByManufacturerName2();
+
+            results1.Count.Should().Be(results2.Count);
         }
 
         [Test]
@@ -52,6 +59,17 @@ namespace SampleTest
         {
             var results1 = this._service.GetMaxMinMinPricesByManufacturerNameWithYear1();
             var results2 = this._service.GetMaxMinMinPricesByManufacturerNameWithYear2();
+
+            results1.Count.Should().Be(results2.Count);
+        }
+
+        [Test]
+        public void GetMaxMinPricesByManufacturerNameWithYearMoreThanOne()
+        {
+            var results1 = this._service.GetMaxMinMinPricesByManufacturerNameWithYearMoreThanOne1();
+            var results2 = this._service.GetMaxMinMinPricesByManufacturerNameWithYearMoreThanOne2();
+
+            results1.Count.Should().Be(results2.Count);
         }
 
         #endregion Tests

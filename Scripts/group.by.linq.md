@@ -93,16 +93,12 @@ SELECT Manufacturer, MAX(Price) AS MaxPrice, MIN(Price) AS MinPrice
 
 Its result will be:
 
-<div>
-<pre>
 |Manufacturer|MaxPrice|MinPrice|
 |---|---|---|
 |BMW|116|110|
 |Hyundai|125|100|
 |Toyota|108|105|
 |VW|120|110|
-</pre>
-</div>
 
 With LINQ, try to achieve the same result. There are two different types of using LINQ:
 
@@ -152,16 +148,12 @@ SELECT
 
 And its result will be:
 
-<div>
-<pre>
 |C1|Manufacturer|C2|C3|
 |---|---|---|---|
 |1|BMW|116|110|
 |1|Hyundai|125|100|
 |1|Toyota|108|105|
 |1|VW|120|110|
-</pre>
-</div>
 
 As you can see the result retrieved by LINQ is literally the same as the one by SQL query. Now let's move on to the next query using `GROUP BY` clause with a composite key.
 
@@ -180,8 +172,6 @@ SELECT Manufacturer, Name, MAX(Price) AS MaxPrice, MIN(Price) AS MinPrice
 
 It results in:
 
-<div>
-<pre>
 |Manufacturer|Name|MaxPrice|MinPrice|
 |---|---|---|---|
 |BMW|118|116|110|
@@ -189,8 +179,6 @@ It results in:
 |Hyundai|Lantra|120|100|
 |Toyota|Yaris|108|105|
 |VW|Golf|120|110|
-</pre>
-</div>
 
 How can we achieve this in c# with LINQ? Let's see the following code example:
 
@@ -244,8 +232,6 @@ SELECT
 
 And it results in:
 
-<div>
-<pre>
 |C1|Manufacturer|Name|C2|C3|
 |---|---|---|---|---|
 |1|BMW|118|116|110|
@@ -253,8 +239,6 @@ And it results in:
 |1|Hyundai|Lantra|120|100|
 |1|Toyota|Yaris|108|105|
 |1|VW|Golf|120|110|
-</pre>
-</div>
 
 We can confirm that both SQL query and LINQ statements returns the same result set. Now let's move on to the next query with `WHERE` clause to filter out `NULL` values.
 
@@ -345,3 +329,121 @@ It returns the result of:
 |1|Toyota|Yaris|108|105|
 |1|VW|Golf|120|110|
 
+Alright. Now, we want to grab cars having more than one records. For the next section, `HAVING` clause will be used.
+
+
+## `GROUP BY` with `HAVING` Clause ##
+
+Let's dig down the SQL query more precisely &ndash; Manufacturer, Name and Year. Typical SQL query looks like:
+
+<div>
+<pre lang="sql">
+SELECT Manufacturer, Name, [Year], MAX(Price) AS MaxPrice, MIN(Price) AS MinPrice
+  FROM [dbo].[Cars]
+ WHERE [Year] IS NOT NULL
+   AND Price IS NOT NULL
+ GROUP BY Manufacturer, Name, [Year]
+
+SELECT Manufacturer, Name, [Year], MAX(Price) AS MaxPrice, MIN(Price) AS MinPrice
+  FROM [dbo].[Cars]
+ WHERE [Year] IS NOT NULL
+   AND Price IS NOT NULL
+ GROUP BY Manufacturer, Name, [Year]
+HAVING COUNT([Year]) > 1
+</pre>
+</div>
+
+Both queries return records grouped by `Manufacturer`, `Name` and `Year`. You can see single records on the first query, while the second query doesn't return a single record as the second query contains `HAVING` clause.
+ 
+Therefore the second query returns:
+
+|Manufacturer|Name|Year|MaxPrice|MinPrice|
+|---|---|---|---|---|
+|BMW|118|2013|115|110|
+|BMW|118|2014|116|115|
+|Hyundai|i30|2014|109|108|
+|Toyota|Yaris|2013|107|106|
+
+How to achieve this goal in c#? Let's see the following code:
+
+<div>
+<pre lang="csharp">
+// LINQ
+var results1 = (from c in this._context.Cars
+                where c.Year != null && c.Price != null
+                group c by new { Manufacturer = c.Manufacturer, Name = c.Name, Year = c.Year } into g
+                where g.Count() > 1
+                select new CarViewModel()
+                       {
+                           Manufacturer = g.Key.Manufacturer,
+                           Name = g.Key.Name,
+                           Year = g.Key.Year,
+                           MaxPrice = g.Max(q => q.Price),
+                           MinPrice = g.Min(q => q.Price)
+                       });
+
+// Fluent API
+var results2 = this._repository
+                   .Get()
+                   .Where(c => c.Year != null && c.Price != null)
+                   .GroupBy(c => new { Manufacturer = c.Manufacturer, Name = c.Name, Year = c.Year },
+                            (g, r) => new
+                                      {
+                                          Manufacturer = g.Manufacturer,
+                                          Name = g.Name,
+                                          Year = g.Year,
+                                          Count = r.Count(),
+                                          MaxPrice = r.Max(q => q.Price),
+                                          MinPrice = r.Min(q => q.Price)
+                                      })
+                   .Where(p => p.Count > 1)
+                   .Select(p => new CarViewModel()
+                                {
+                                    Manufacturer = p.Manufacturer,
+                                    Name = p.Name,
+                                    Year = p.Year,
+                                    MaxPrice = p.MaxPrice,
+                                    MinPrice = p.MinPrice
+                                });
+</pre>
+</div>
+
+`HAVING` clause is basically the same as `WHERE` clause, but only used with `GROUP BY` clause. Therefore, as you can see above, another `where` keyword or `Where()` method has been used for `HAVING`. Another point we should get noticed is that **anonymouse type objects** are very actively used for grouping. As a result, both codes internally generate the same SQL query like:
+
+<div>
+<pre lang="sql">
+SELECT 
+    1 AS [C1], 
+    [GroupBy1].[K2] AS [Manufacturer], 
+    [GroupBy1].[K1] AS [Name], 
+    [GroupBy1].[K3] AS [Year], 
+    [GroupBy1].[A2] AS [C2], 
+    [GroupBy1].[A3] AS [C3]
+    FROM ( SELECT 
+        [Extent1].[Name] AS [K1], 
+        [Extent1].[Manufacturer] AS [K2], 
+        [Extent1].[Year] AS [K3], 
+        COUNT(1) AS [A1], 
+        MAX([Extent1].[Price]) AS [A2], 
+        MIN([Extent1].[Price]) AS [A3]
+        FROM [dbo].[Cars] AS [Extent1]
+        WHERE ([Extent1].[Year] IS NOT NULL) AND ([Extent1].[Price] IS NOT NULL)
+        GROUP BY [Extent1].[Name], [Extent1].[Manufacturer], [Extent1].[Year]
+    )  AS [GroupBy1]
+    WHERE [GroupBy1].[A1] > 1
+</pre>
+</div>
+
+And its results are:
+
+|C1|Manufacturer|Name|Year|C2|C3|
+|---|---|---|---|---|---|
+|1|BMW|118|2013|115|110|
+|1|BMW|118|2014|116|115|
+|1|Hyundai|i30|2014|109|108|
+|1|Toyota|Yaris|2013|107|106|
+
+
+## Conclusion ##
+
+So far, we have discussed how to use `GROUP BY` clause and `HAVING` clause in c# code with helps of LINQ. It's not as easy as we expected. However, the basic usages are understood, by comparing to the traditional SQL queries, it will be more than easier. If we carefully use `Where()` method for `HAVING`, `GROUP BY` aggregation will be achievable.

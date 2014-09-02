@@ -118,12 +118,46 @@ namespace SampleService
 
         public IList<CarViewModel> GetMaxMinMinPricesByManufacturerNameWithYearMoreThanOne1()
         {
-            throw new NotImplementedException();
+            var results1 = (from c in this._context.Cars
+                            where c.Year != null && c.Price != null
+                            group c by new { Manufacturer = c.Manufacturer, Name = c.Name, Year = c.Year } into g
+                            where g.Count() > 1
+                            select new CarViewModel()
+                                   {
+                                       Manufacturer = g.Key.Manufacturer,
+                                       Name = g.Key.Name,
+                                       Year = g.Key.Year,
+                                       MaxPrice = g.Max(q => q.Price),
+                                       MinPrice = g.Min(q => q.Price)
+                                   });
+            return results1.ToList();
         }
 
         public IList<CarViewModel> GetMaxMinMinPricesByManufacturerNameWithYearMoreThanOne2()
         {
-            throw new NotImplementedException();
+            var results2 = this._repository
+                               .Get()
+                               .Where(c => c.Year != null && c.Price != null)
+                               .GroupBy(c => new { Manufacturer = c.Manufacturer, Name = c.Name, Year = c.Year },
+                                        (g, r) => new
+                                                  {
+                                                      Manufacturer = g.Manufacturer,
+                                                      Name = g.Name,
+                                                      Year = g.Year,
+                                                      Count = r.Count(),
+                                                      MaxPrice = r.Max(q => q.Price),
+                                                      MinPrice = r.Min(q => q.Price)
+                                                  })
+                               .Where(p => p.Count > 1)
+                               .Select(p => new CarViewModel()
+                                            {
+                                                Manufacturer = p.Manufacturer,
+                                                Name = p.Name,
+                                                Year = p.Year,
+                                                MaxPrice = p.MaxPrice,
+                                                MinPrice = p.MinPrice
+                                            });
+            return results2.ToList();
         }
 
         public void Dispose()

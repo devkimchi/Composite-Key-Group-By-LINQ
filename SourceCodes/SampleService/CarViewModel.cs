@@ -6,6 +6,8 @@
 
         public string Name { get; set; }
 
+        public int? Year { get; set; }
+
         public int? MaxPrice { get; set; }
 
         public int? MinPrice { get; set; }
